@@ -5,134 +5,204 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: thaley <thaley@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/03/18 17:23:22 by thaley            #+#    #+#             */
-/*   Updated: 2019/03/18 21:53:12 by thaley           ###   ########.fr       */
+/*   Created: 2019/03/20 14:09:55 by thaley            #+#    #+#             */
+/*   Updated: 2019/03/20 21:49:24 by thaley           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft/libft.h"
-#include <unistd.h> //write | readlink
-#include <dirent.h> //opendir | readdir | closedir
-#include <sys/types.h> // structs
-#include <sys/dir.h> //struct dirent
-#include <sys/stat.h> //stat | lstat
-#include <grp.h> //getgrgid
-#include <uuid/uuid.h> //getgrgid | getpwuid
-#include <sys/xattr.h> //listxattr | getxattr
-#include <time.h> //time | ctime
-#include <stdlib.h> //malloc | free | exit
-#include <stdio.h> //perror | strerror
-
-/*
-** print time and name of file/dir (not as ls)
-** sort by ascii
-*/
-void	print_all(char **name, char **f_time)
+#include "ft_ls.h"
+//7890
+int		main(int argc, char **argv)
 {
-	int k = 0;
-	while (name[k] != NULL)
-	{
-		ft_putstr(f_time[k]);
-		write(1, " ", 1);
-		ft_putstr(name[k]);
-		write(1, "\n", 2);
-		k++;
-	}
-	k = 0;
-	char *tmp;
-	tmp = name[k];
-	while (k < 14)
-	{
-		free(name[k]);
-		k++;
-	}
-	name[0] = tmp;
-	free(name);
-}
-/*
-** st_nlink = кол-во жестких связок, #2
-** st_mtime = время послденей модификации, #6
-** st_size = размер файла, #5
-*/
+	DIR		*dir;
+	t_ls	*info;
+	int		blocks;
 
-char	**get_time(int index, char **name)
-{
-	struct stat		buf;
-	char			**new;
-	int				i;
-	size_t			len;
-
-	i = 0;
-	len = 0;
-	new = NULL;
-	new = (char **)malloc(sizeof(char *) * index);
-	while (i < index)
-	{
-		stat(name[i], &buf);
-		printf("%s\n", ft_itoa((buf.st_nlink)));
-		len = ft_strlen(ctime(&buf.st_mtime));
-		printf("%2s || %2s\n", ctime(&buf.st_mtime), ft_itoa(buf.st_size));
-		new[i] = (char *)malloc(sizeof(char) * len);
-		new[i] = ft_strcpy(new[i], ctime(&buf.st_mtime));
-		new[i][len - 1] = '\0';//remove \n at the and of time
-		i++;
-	}
-	new[i] = NULL;
-	return (new);
-}
-
-char	**get_string(int i, DIR *dir)
-{
-	struct dirent	*file;
-	char			**name;
-
-	name = (char **)malloc(sizeof(char *) * i + 1);
-	i = 0;
-	while ((file = readdir(dir)) != NULL)
-	{
-		name[i] = (char *)malloc(sizeof(char) * file->d_namlen);
-		name[i] = ft_strcpy(name[i], file->d_name);
-		i++;		
-	}
-	write(1, "\n", 1);
-	name[i] = NULL;
-	return (name);
-}
-
-int		count_files(DIR *dir)
-{
-	struct dirent	*file;
-	int				i;
-
-	i = 0;
-	while((file = readdir(dir)) != NULL)
-		i++;
-	return (i);
-}
-
-int		main()
-{
-	DIR				*dir;
-	char			**name;
-	int				i;
-	char			**f_time;
-
-	i = 0;
-	name = NULL;
-	dir = opendir(".");
+	blocks = 0;
+	info = NULL;
+	if (argc == 1)
+		dir = opendir(".");
+	else
+		dir = opendir(argv[1]);
 	if (dir == NULL)
 	{
 		write(1, "error\n", 7);
 		exit (1);
 	}
-	if (!(i = count_files(dir)))
-		exit (1);
-	closedir(dir);
-	dir = opendir(".");
-	// printf("file names: %d\n", i);
-	name = get_string(i, dir);
-	closedir(dir);
-	f_time = get_time(i, name);	
-	print_all(name, f_time);
+	info = some_func(dir);
+	blocks = write_info(info); //acess rights, size of files in block, time, hard links
+	user_info(info); //info about group and user
+	string_sort(info);
+	while (info)
+	{
+		printf("%s\n", info->name);
+		info = info->next;
+	}
+	// print_all(info);
+	// free_list(&info, del_ls);
+	// free(info);
 	return (0);
+}
+
+/* correct */
+
+t_ls	*some_func(DIR *dir)
+{
+	t_ls			*new;
+	t_ls			*head;
+	struct dirent	*file;
+	int				i;
+	int				count;
+
+	i = 0;
+	count = 0;
+	new = NULL;
+	new = add_list(new);
+	head = new;
+	while ((file = readdir(dir)) != NULL)
+	{
+		if (new->name)
+		{
+			new->next = add_list(new);
+			new = new->next;
+		}
+		new->name = (char *)malloc(sizeof(char) * file->d_namlen);
+		new->name = ft_strcpy(new->name, file->d_name);
+		count++;
+		new->count = count;
+	}
+	new = head;
+	return (new);
+}
+
+/* correct */
+
+t_ls	*add_list(t_ls *head)
+{
+	t_ls	*tmp;
+	t_ls	*new;
+
+	tmp = head;
+	new = (t_ls *)malloc(sizeof(t_ls));
+	new->count = 0;
+	new->size = 0;
+	new->link = 0;
+	new->uid = 0;
+	new->name = NULL;
+	new->acess = 0;
+	new->m_time = NULL;
+	new->user_name = NULL;
+	new->group_name = NULL;
+	new->next = NULL;
+	if (tmp == NULL)
+		head = new;
+	else
+	{
+		while (tmp->next != NULL)
+			tmp = tmp->next;
+		tmp->next = new;
+	}
+	return (new);
+}
+
+/* not work */
+
+void	free_list(t_ls **head, void del_ls(t_ls *))
+{
+	t_ls	*tmp;
+	if (!(*head))
+		return ;
+	tmp = (*head);
+	while ((*head)->next)
+		free_list(&(*head)->next, del_ls);
+	free((*head)->name);
+	(*head)->name = NULL;
+}
+
+void	del_ls(t_ls *tmp)
+{
+	free(tmp);
+}
+
+int		write_info(t_ls *info)
+{
+	struct stat	buf;
+	int			blocks;
+
+	blocks = 0;
+	while (info)
+	{
+		stat(info->name, &buf);
+		info->m_time = ft_strsub(ctime(&buf.st_mtime), 4, 12); //только нужная часть даты
+		info->link = buf.st_nlink;
+		info->size = buf.st_size;
+		info->uid = buf.st_uid;
+		info->acess = buf.st_mode;
+		info->block = buf.st_blocks; //лучше сделать все таки чаровским
+		blocks = blocks + info->block;
+		info = info->next;
+	}
+	return (blocks);
+}
+
+/* понять как выравнивать таблицы */
+
+void	print_all(t_ls *info)
+{
+	while (info)
+	{
+		ft_putnbr(info->link);
+		ft_putstr("  ");
+		ft_putstr(info->user_name);
+		ft_putstr("  ");
+		ft_putstr(info->group_name);
+		ft_putstr("  ");
+		ft_putnbr(info->size);
+		ft_putstr("  ");
+		ft_putstr(info->m_time);
+		ft_putstr("  ");
+		ft_putstr(info->name);
+		ft_putstr("\n");
+		info = info->next;
+	}
+}
+
+void	user_info(t_ls *info)
+{
+	struct passwd	*userinfo;
+	struct group	*grinfo;
+
+	userinfo = getpwuid(info->uid);
+	grinfo = getgrgid(userinfo->pw_gid);
+	while (info)
+	{
+		info->user_name = ft_strdup(userinfo->pw_name);
+		info->group_name = ft_strdup(grinfo->gr_name);
+		info = info->next;
+	}
+}
+// продумай как сделать чтобы перебирал все
+void	string_sort(t_ls *info)
+{
+	t_ls	*head;
+	char	*tmp;
+	int		i;
+
+	i = 0;
+	tmp = NULL;
+	while (info)
+	{
+		head = info;
+		if (info->next == NULL)
+			return ;
+		info = info->next;
+		i = ft_strcmp(info->name, head->name);
+		printf("%d\n", i);
+		if (i < 0)
+		{
+			tmp = head->name;
+			head->name = info->name;
+			info->name = tmp;
+		}
+	}
 }
