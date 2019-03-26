@@ -6,7 +6,7 @@
 #    By: thaley <thaley@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/03/18 17:12:23 by thaley            #+#    #+#              #
-#    Updated: 2019/03/20 21:32:25 by thaley           ###   ########.fr        #
+#    Updated: 2019/03/26 20:30:39 by thaley           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,7 +14,7 @@ NAME = ft_ls
 
 CFLAGS = -Wall -Wextra -Werror -g
 
-SRC = main.c
+SRC = main.c ft_unitoa.c info.c create.c
 
 OBJ = $(SRC:.c=.o)
 

@@ -5,204 +5,129 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: thaley <thaley@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/03/20 14:09:55 by thaley            #+#    #+#             */
-/*   Updated: 2019/03/20 21:49:24 by thaley           ###   ########.fr       */
+/*   Created: 2019/03/26 16:28:17 by thaley            #+#    #+#             */
+/*   Updated: 2019/03/26 20:18:59 by thaley           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
-//7890
+
 int		main(int argc, char **argv)
 {
 	DIR		*dir;
-	t_ls	*info;
-	int		blocks;
-
-	blocks = 0;
-	info = NULL;
+	t_flags	*flag;
+	char	**direct;
+	
+	flag = NULL;
+	direct = NULL;
+	dir = NULL;
 	if (argc == 1)
 		dir = opendir(".");
 	else
-		dir = opendir(argv[1]);
-	if (dir == NULL)
 	{
-		write(1, "error\n", 7);
-		exit (1);
+		if (!(direct = find_dir(argv, &flag)))
+			return (1); //check flags, take name of directories
+		int i = 0;
+		while (direct[i]) //need check ! if direct > 1 printf name of dir
+		{
+			if ((get_info(dir, direct[i], flag)))
+			{
+				ft_putstr("ft_ls: ");
+				ft_putstr(direct[i]);
+				ft_putstr(": No such file or directory\n");
+				exit(1);
+			}
+			i++;
+		}
 	}
-	info = some_func(dir);
-	blocks = write_info(info); //acess rights, size of files in block, time, hard links
-	user_info(info); //info about group and user
-	string_sort(info);
-	while (info)
-	{
-		printf("%s\n", info->name);
-		info = info->next;
-	}
-	// print_all(info);
-	// free_list(&info, del_ls);
-	// free(info);
 	return (0);
 }
 
-/* correct */
-
-t_ls	*some_func(DIR *dir)
+char	**find_dir(char **argv, t_flags **flag)
 {
-	t_ls			*new;
-	t_ls			*head;
-	struct dirent	*file;
-	int				i;
-	int				count;
-
-	i = 0;
-	count = 0;
-	new = NULL;
-	new = add_list(new);
-	head = new;
-	while ((file = readdir(dir)) != NULL)
-	{
-		if (new->name)
-		{
-			new->next = add_list(new);
-			new = new->next;
-		}
-		new->name = (char *)malloc(sizeof(char) * file->d_namlen);
-		new->name = ft_strcpy(new->name, file->d_name);
-		count++;
-		new->count = count;
-	}
-	new = head;
-	return (new);
-}
-
-/* correct */
-
-t_ls	*add_list(t_ls *head)
-{
-	t_ls	*tmp;
-	t_ls	*new;
-
-	tmp = head;
-	new = (t_ls *)malloc(sizeof(t_ls));
-	new->count = 0;
-	new->size = 0;
-	new->link = 0;
-	new->uid = 0;
-	new->name = NULL;
-	new->acess = 0;
-	new->m_time = NULL;
-	new->user_name = NULL;
-	new->group_name = NULL;
-	new->next = NULL;
-	if (tmp == NULL)
-		head = new;
-	else
-	{
-		while (tmp->next != NULL)
-			tmp = tmp->next;
-		tmp->next = new;
-	}
-	return (new);
-}
-
-/* not work */
-
-void	free_list(t_ls **head, void del_ls(t_ls *))
-{
-	t_ls	*tmp;
-	if (!(*head))
-		return ;
-	tmp = (*head);
-	while ((*head)->next)
-		free_list(&(*head)->next, del_ls);
-	free((*head)->name);
-	(*head)->name = NULL;
-}
-
-void	del_ls(t_ls *tmp)
-{
-	free(tmp);
-}
-
-int		write_info(t_ls *info)
-{
-	struct stat	buf;
-	int			blocks;
-
-	blocks = 0;
-	while (info)
-	{
-		stat(info->name, &buf);
-		info->m_time = ft_strsub(ctime(&buf.st_mtime), 4, 12); //только нужная часть даты
-		info->link = buf.st_nlink;
-		info->size = buf.st_size;
-		info->uid = buf.st_uid;
-		info->acess = buf.st_mode;
-		info->block = buf.st_blocks; //лучше сделать все таки чаровским
-		blocks = blocks + info->block;
-		info = info->next;
-	}
-	return (blocks);
-}
-
-/* понять как выравнивать таблицы */
-
-void	print_all(t_ls *info)
-{
-	while (info)
-	{
-		ft_putnbr(info->link);
-		ft_putstr("  ");
-		ft_putstr(info->user_name);
-		ft_putstr("  ");
-		ft_putstr(info->group_name);
-		ft_putstr("  ");
-		ft_putnbr(info->size);
-		ft_putstr("  ");
-		ft_putstr(info->m_time);
-		ft_putstr("  ");
-		ft_putstr(info->name);
-		ft_putstr("\n");
-		info = info->next;
-	}
-}
-
-void	user_info(t_ls *info)
-{
-	struct passwd	*userinfo;
-	struct group	*grinfo;
-
-	userinfo = getpwuid(info->uid);
-	grinfo = getgrgid(userinfo->pw_gid);
-	while (info)
-	{
-		info->user_name = ft_strdup(userinfo->pw_name);
-		info->group_name = ft_strdup(grinfo->gr_name);
-		info = info->next;
-	}
-}
-// продумай как сделать чтобы перебирал все
-void	string_sort(t_ls *info)
-{
-	t_ls	*head;
-	char	*tmp;
+	char	**new;
 	int		i;
+	int		check;
 
-	i = 0;
-	tmp = NULL;
-	while (info)
+	i = 1;
+	check = 1;
+	new = NULL; 
+	while (argv[i])
 	{
-		head = info;
-		if (info->next == NULL)
-			return ;
-		info = info->next;
-		i = ft_strcmp(info->name, head->name);
-		printf("%d\n", i);
-		if (i < 0)
+		if (argv[i][0] == '-')
 		{
-			tmp = head->name;
-			head->name = info->name;
-			info->name = tmp;
+			if ((*flag = find_flag(argv[i])))
+				check = i + 1;
+			else
+			{
+				ft_putstr("ft_ls: illegal option\n"); //must write what option wrong!
+				return (NULL);	
+			}
 		}
+		i++;
 	}
+	i = 0;
+	while (argv[check + i])
+		i++;
+	if (i > 0)
+	{
+		new = (char **)malloc(sizeof(char *) * i + 1);
+		i = 0;
+		while (argv[check])
+		{
+			new[i] = ft_strdup(argv[check]);
+			check++;
+			i++;
+		}
+		new[i] = NULL;
+	}
+	return (new);
+}
+
+/*
+** seems to work correctly
+*/
+
+t_flags	*find_flag(char *argv)
+{
+	int		i;
+	int		j;
+	int		check;
+	char tmp[5] = {'l', 'a', 'r', 'R', 't'};
+	t_flags	*flag;
+
+	i = 1;
+	check = 0;
+	if (!(flag = (t_flags *)malloc(sizeof(t_flags))))
+		return (NULL);
+	flag->l = 0;
+	flag->a = 0;
+	flag->r = 0;
+	flag->R = 0;
+	flag->t = 0;
+	while (argv[i])
+	{
+		check = 0;
+		j = 0;
+		if (argv[i] != 'l' && argv[i] != 'a' && argv[i] != 'r'
+			&& argv[i] != 'R' && argv[i] != 't')
+		{
+			free(flag);
+			return (NULL);
+		}
+		while (tmp[j])
+		{
+			if (argv[i] == tmp[j])
+			{
+				j == 0 ? (flag->l = 1) : check++;
+				j == 1 ? (flag->a = 1) : check++;
+				j == 2 ? (flag->r = 1) : check++;
+				j == 3 ? (flag->R = 1) : check++;
+				j == 4 ? (flag->t = 1) : check++;
+			}
+			j++;
+		}
+		i++;
+	}
+	return (flag);
 }

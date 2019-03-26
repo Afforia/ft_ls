@@ -6,7 +6,7 @@
 /*   By: thaley <thaley@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/20 14:07:53 by thaley            #+#    #+#             */
-/*   Updated: 2019/03/20 21:05:55 by thaley           ###   ########.fr       */
+/*   Updated: 2019/03/26 20:30:52 by thaley           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,29 +27,45 @@
 # include <stdio.h> //perror | strerror
 # include <pwd.h> 
 
-typedef struct	s_ls
+typedef struct		s_ls
 {
 	char			*name;
 	char			*m_time;
 	char			*user_name;
 	char			*group_name;
-	unsigned short	acess;
+	char			*acess;
 	int				size;
 	int				link;
 	int				uid;
 	int				count;
 	long long int	block;
-	struct s_ls	*next;
-}				t_ls;
+	struct s_ls		*next;
+}					t_ls;
+
+typedef struct		s_flags
+{
+	int				l;
+	int				a;
+	int				r;
+	int				R;
+	int				t;
+}					t_flags;
 
 
-t_ls			*some_func(DIR *dir);
-t_ls			*add_list(t_ls *head);
-void			free_list(t_ls **head, void del_ls(t_ls *));
-void			del_ls(t_ls *tmp);
-int				write_info(t_ls *info);
-void			print_all(t_ls *info);
-void			user_info(t_ls *info);
-void			string_sort(t_ls *info);
+char				**find_dir(char **argv, t_flags **flag);
+t_flags				*find_flag(char *argv);
+
+int					get_info(DIR *dir, char *direct, t_flags *flag);
+
+t_ls				*add_list(t_ls *head);
+
+// t_ls				*some_func(DIR *dir);
+// void				free_list(t_ls **head, void del_ls(t_ls *));
+// void				del_ls(t_ls *tmp);
+// int					write_info(t_ls *info);
+// void				print_all(t_ls *info);
+// void				user_info(t_ls *info);
+// int					string_sort(t_ls *info);
+// char				*ft_unitoa(unsigned short n);
 
 #endif

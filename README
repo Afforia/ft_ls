@@ -8,28 +8,15 @@ getgrgid = вся инфа связанная с группой
 если есть флаги они всегда идут вторым аргументом ?!
 возможно все придеться переводить в чары для настройки корректного отображения!
 
-for acess - 100664 
-1 = file_type
-6 = acess rights
-6 = acess rights
-4 = acess rights
+1) сортировка по ascii 	  +
+2) права доступа в строке +
+3) нужно сначала сортировать потом записывать или как то менять местами полностью информацию в листе!
 
-ПОБИТОВЫЕ ОПЕРАЦИИ СУКА!!!
+если несколько директорий он СНАЧАЛА должен вывести ОШИБКУ и только потом результат корректной директории
 
-.
-..
-.vscode
-a.out
-ft_ls
-ft_ls.h
-get_pwuid.c
-libft
-listxattr.c
-main.c
-main.o
-Makefile
-r_dir.c
-README
-test
-test.c
-time.c
+TO DO
+1) ! Normal flag check !
+2) ! acess check !
+3) Sort list like at book at home ?!?!
+
+MB done check for ALL directories before write! 
