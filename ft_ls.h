@@ -6,7 +6,7 @@
 /*   By: thaley <thaley@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/20 14:07:53 by thaley            #+#    #+#             */
-/*   Updated: 2019/03/26 20:30:52 by thaley           ###   ########.fr       */
+/*   Updated: 2019/03/27 20:54:50 by thaley           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,13 +51,32 @@ typedef struct		s_flags
 	int				t;
 }					t_flags;
 
+typedef struct 		s_access
+{
+	char			*user;
+	char			*group;
+	char			*other;
+	char			*type;
+	struct s_access	*next;
+}					t_access;
+
+
 
 char				**find_dir(char **argv, t_flags **flag);
 t_flags				*find_flag(char *argv);
 
-int					get_info(DIR *dir, char *direct, t_flags *flag);
+int					get_name(DIR *dir, char *direct, t_flags *flag);
+int					get_info(t_ls *ls);
+int					string_sort(t_ls *ls);
+int					options(t_ls *ls, t_flags *flag);
+void				user_info(t_ls *ls);
+void				acess(t_ls *ls);
 
 t_ls				*add_list(t_ls *head);
+t_flags				*creat_flag();
+t_access			*creat_access(t_ls *ls, t_access *head);
+
+char				*ft_unitoa(unsigned short n);
 
 // t_ls				*some_func(DIR *dir);
 // void				free_list(t_ls **head, void del_ls(t_ls *));
@@ -66,6 +85,5 @@ t_ls				*add_list(t_ls *head);
 // void				print_all(t_ls *info);
 // void				user_info(t_ls *info);
 // int					string_sort(t_ls *info);
-// char				*ft_unitoa(unsigned short n);
 
 #endif
