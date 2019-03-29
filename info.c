@@ -45,10 +45,6 @@ int		get_name(DIR *dir, char *direct, t_flags *flag)
 	return (0);
 }
 
-/*
-** mb dont corecte with last element!
-*/
-
 int		string_sort(t_ls *ls)
 {
 	t_ls	*head;
@@ -62,11 +58,6 @@ int		string_sort(t_ls *ls)
 	head = ls;
 	while (ls)
 	{
-		if (ls->next == NULL)
-		{
-			if (string_sort(head->next))
-				return (1);
-		}
 		i = ft_strcmp(ls->name, head->name);
 		if (i < 0)
 		{
@@ -75,24 +66,37 @@ int		string_sort(t_ls *ls)
 			ls->name = tmp;
 		}
 		ls = ls->next;
+		if (ls == NULL)
+		{
+			if (string_sort(head->next))
+				return (1);
+		}
 	}
 	return (0);
 }
 
 int		options(t_ls *ls, t_flags *flag)
 {
-	int		blocks;
+	t_access	*access;
+	int			blocks;
 
 	blocks = 0;
+	access = NULL;
+	if (flag->a == 0)
+		ls = delete_hiden(ls);
 	if (flag->l)
 	{
-		blocks = get_info(ls);
+		blocks = get_info(ls); 
 		user_info(ls);
-		acess(ls);
+		access = acess(ls);
 	}
 	printf("total: %d\n", blocks);
 	while (ls)
 	{
+		printf("%s", access->type);
+		printf("%s", access->user);
+		printf("%s", access->group);
+		printf("%s ", access->other);
 		printf("%d ", ls->link);
 		printf("%-1s ", ls->user_name);
 		printf("%-1s ", ls->group_name);
@@ -100,6 +104,7 @@ int		options(t_ls *ls, t_flags *flag)
 		printf("%-1s ", ls->m_time);
 		printf("%1s\n", ls->name);
 		ls = ls->next;
+		access = access->next;
 	}
 	return (0);
 }
@@ -120,7 +125,6 @@ int		get_info(t_ls *ls)
 		ls->acess = ft_unitoa(buf.st_mode);
 		ls->block = buf.st_blocks; //лучше сделать все таки чаровским
 		blocks = blocks + ls->block;
-		printf("%s\n", ls->acess);
 		ls = ls->next;
 	}
 	return (blocks);
@@ -141,28 +145,70 @@ void	user_info(t_ls *ls)
 	}
 }
 
-void	acess(t_ls *ls)
+t_access	*acess(t_ls *ls)
 {
-	t_ls		*head;
+	t_access	*head;
 	t_access	*new;
 
-	new = creat_access(ls, new);
+	new = NULL;
+	new = creat_access(new);
 	head = new;
 	while (ls)
 	{
 		if (new->type)
 		{
-			new->next = add_list(new);
+			new->next = creat_access(new);
 			new = new->next;
 		}
 		if (ls->acess[0] == '1')
 			new->type = ft_strdup("-");
 		else
 			new->type = ft_strdup("d");
-		new->user = take_chmod(ls->acess);
-		new->group = take_chmod(ls->acess);
-		new->other = take_chmod(ls->acess);
-		new = new->next;
+		new->user = take_chmod(ls->acess, 1);
+		new->group = take_chmod(ls->acess, 2);
+		new->other = take_chmod(ls->acess, 3);
 		ls = ls->next;
 	}
+	new = head;
+	return (new);
+}
+
+char	*take_chmod(char *access, int num)
+{
+	char	*new;
+	int		i;
+
+	i = 0;
+	new = NULL;
+	while (access[i])
+		i++;
+	if (num == 1)
+		i = i - 3;
+	else if (num == 2)
+		i = i - 2;
+	else
+		i = i - 1;
+	access[i] == '0' ? new = ft_strdup("---") : 0;
+	access[i] == '1' ? new = ft_strdup("--x") : 0;
+	access[i] == '2' ? new = ft_strdup("-w-") : 0;
+	access[i] == '3' ? new = ft_strdup("-wx") : 0;
+	access[i] == '4' ? new = ft_strdup("r--") : 0;
+	access[i] == '5' ? new = ft_strdup("r-x") : 0;
+	access[i] == '6' ? new = ft_strdup("rw-") : 0;
+	access[i] == '7' ? new = ft_strdup("rwx") : 0;
+	return (new);
+}
+
+t_ls	*delete_hiden(t_ls *ls)
+{
+	t_ls	*head;
+
+	head = NULL;
+	while (ls->name[0] == '.')
+	{
+		head = ls->next;
+		free(ls);
+		ls = head;
+	}
+	return (ls);
 }

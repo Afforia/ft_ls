@@ -6,7 +6,7 @@
 /*   By: thaley <thaley@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/26 20:31:01 by thaley            #+#    #+#             */
-/*   Updated: 2019/03/27 20:56:15 by thaley           ###   ########.fr       */
+/*   Updated: 2019/03/29 18:37:56 by thaley           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ t_flags	*creat_flag()
 	return (flag);
 }
 
-t_access	*creat_access(t_ls *ls, t_access *head)
+t_access	*creat_access(t_access *head)
 {
 	t_access	*new;
 	t_access	*tmp;

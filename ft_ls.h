@@ -6,7 +6,7 @@
 /*   By: thaley <thaley@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/20 14:07:53 by thaley            #+#    #+#             */
-/*   Updated: 2019/03/27 20:54:50 by thaley           ###   ########.fr       */
+/*   Updated: 2019/03/29 19:29:17 by thaley           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,11 +70,13 @@ int					get_info(t_ls *ls);
 int					string_sort(t_ls *ls);
 int					options(t_ls *ls, t_flags *flag);
 void				user_info(t_ls *ls);
-void				acess(t_ls *ls);
+t_access			*acess(t_ls *ls);
+char				*take_chmod(char *access, int num);
+t_ls				*delete_hiden(t_ls *ls);
 
 t_ls				*add_list(t_ls *head);
 t_flags				*creat_flag();
-t_access			*creat_access(t_ls *ls, t_access *head);
+t_access			*creat_access(t_access *head);
 
 char				*ft_unitoa(unsigned short n);
 
