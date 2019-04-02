@@ -6,7 +6,7 @@
 /*   By: thaley <thaley@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/30 14:47:14 by thaley            #+#    #+#             */
-/*   Updated: 2019/03/30 16:55:47 by thaley           ###   ########.fr       */
+/*   Updated: 2019/04/02 19:57:51 by thaley           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,30 @@ t_ls	*add_list(t_ls *head)
 	new->sort_time = NULL;
 	new->user_name = NULL;
 	new->group_name = NULL;
+	new->print_name = NULL;
+	new->next = NULL;
+	if (tmp == NULL)
+		head = new;
+	else
+	{
+		while (tmp->next != NULL)
+			tmp = tmp->next;
+		tmp->next = new;
+	}
+	return (new);
+}
+
+t_access	*creat_access(t_access *head)
+{
+	t_access	*new;
+	t_access	*tmp;
+
+	tmp = head;
+	new = (t_access *)malloc(sizeof(t_access));
+	new->group = NULL;
+	new->other = NULL;
+	new->type = NULL;
+	new->user = NULL;
 	new->next = NULL;
 	if (tmp == NULL)
 		head = new;

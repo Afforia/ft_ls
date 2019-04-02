@@ -6,7 +6,7 @@
 /*   By: thaley <thaley@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/30 14:01:27 by thaley            #+#    #+#             */
-/*   Updated: 2019/03/30 16:41:09 by thaley           ###   ########.fr       */
+/*   Updated: 2019/04/02 15:26:53 by thaley           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ int		take_dir(char *argv, t_flags *flag) //TODO: count numb of directories
 	char	*direct;
 
 	direct = NULL;
-	if (direct = ft_strdup(argv))
+	if ((direct = ft_strdup(argv)))
 		write_info(direct, flag);
 	else
 	{

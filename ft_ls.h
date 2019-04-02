@@ -6,7 +6,7 @@
 /*   By: thaley <thaley@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/20 14:07:53 by thaley            #+#    #+#             */
-/*   Updated: 2019/03/30 17:06:50 by thaley           ###   ########.fr       */
+/*   Updated: 2019/04/02 21:10:47 by thaley           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@
 typedef struct		s_ls
 {
 	char			*name;
+	char			*print_name;
 	char			*m_time;
 	char			*sort_time;
 	char			*user_name;
@@ -61,21 +62,44 @@ typedef struct 		s_access
 	struct s_access	*next;
 }					t_access;
 
+typedef struct 		s_date
+{
+	char			*month;
+	char			*week;
+	int				year;
+	int				mnth;
+	int				wk;
+	int				hour;
+	int				min;
+	int				sek;
+	struct s_date	*next;
+}					t_date;
+
+
 int					take_dir(char *argv, t_flags *flag);
 int					take_flags(char *argv, t_flags *flag);
 int					find_flag(t_flags *flag, char *argv);
 
+
 int					write_info(char *direct, t_flags *flag);
-int					write_name(t_ls *ls, DIR *dir);
+t_ls				*write_name(DIR *dir, char *direct);
+int					all_info(t_ls *ls);
+int					take_rights(t_ls *ls, t_access *access);
+char				*take_chmod(char *access, int num);
+void				user_info(t_ls *ls);
 
 t_flags				*creat_flag();
 t_ls				*add_list(t_ls *head);
+t_access			*creat_access(t_access *head);
 
-int					sort_string(t_ls *ls, t_flags *flag);
-void				rm_dotf(t_ls *ls);
+int					sort_string(t_ls *ls, t_flags *flag, t_access *access);
+t_ls				*rm_dotf(t_ls *ls);
 int					ascii_sort(t_ls *ls, int order);
 int					take_stime(t_ls *ls);
+int					time_sort(t_ls *ls, int order);
 
-int					print_ls(t_ls *ls, t_flags *flag);
+char				*ft_unitoa(unsigned short n);
+
+int					print_ls(t_ls *ls, t_flags *flag, t_access *access, int blocks);
 
 #endif
