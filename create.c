@@ -5,40 +5,12 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: thaley <thaley@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/03/26 20:31:01 by thaley            #+#    #+#             */
-/*   Updated: 2019/03/29 18:37:56 by thaley           ###   ########.fr       */
+/*   Created: 2019/03/30 14:47:14 by thaley            #+#    #+#             */
+/*   Updated: 2019/03/30 16:55:47 by thaley           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
-
-t_ls	*add_list(t_ls *head)
-{
-	t_ls	*tmp;
-	t_ls	*new;
-
-	tmp = head;
-	new = (t_ls *)malloc(sizeof(t_ls));
-	new->count = 0;
-	new->size = 0;
-	new->link = 0;
-	new->uid = 0;
-	new->name = NULL;
-	new->acess = NULL;
-	new->m_time = NULL;
-	new->user_name = NULL;
-	new->group_name = NULL;
-	new->next = NULL;
-	if (tmp == NULL)
-		head = new;
-	else
-	{
-		while (tmp->next != NULL)
-			tmp = tmp->next;
-		tmp->next = new;
-	}
-	return (new);
-}
 
 t_flags	*creat_flag()
 {
@@ -57,17 +29,23 @@ t_flags	*creat_flag()
 	return (flag);
 }
 
-t_access	*creat_access(t_access *head)
+t_ls	*add_list(t_ls *head)
 {
-	t_access	*new;
-	t_access	*tmp;
+	t_ls	*tmp;
+	t_ls	*new;
 
 	tmp = head;
-	new = (t_access *)malloc(sizeof(t_access));
-	new->group = NULL;
-	new->other = NULL;
-	new->type = NULL;
-	new->user = NULL;
+	new = (t_ls *)malloc(sizeof(t_ls));
+	new->count = 0;
+	new->size = 0;
+	new->link = 0;
+	new->uid = 0;
+	new->name = NULL;
+	new->acess = NULL;
+	new->m_time = NULL;
+	new->sort_time = NULL;
+	new->user_name = NULL;
+	new->group_name = NULL;
 	new->next = NULL;
 	if (tmp == NULL)
 		head = new;

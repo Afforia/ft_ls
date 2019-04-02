@@ -5,119 +5,69 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: thaley <thaley@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/03/26 16:28:17 by thaley            #+#    #+#             */
-/*   Updated: 2019/03/27 19:59:06 by thaley           ###   ########.fr       */
+/*   Created: 2019/03/30 14:01:27 by thaley            #+#    #+#             */
+/*   Updated: 2019/03/30 16:41:09 by thaley           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
-int		main(int argc, char **argv)
+int		main(int argc, char ** argv)
 {
-	DIR		*dir;
-	t_flags	*flag;
-	char	**direct;
-	int i = 0;
-	
-	flag = NULL;
-	direct = NULL;
-	dir = NULL;
-	if (argc == 1)
-	{
-		direct = (char **)malloc(sizeof(char *) * 2);
-		direct[i] = ft_strdup(".");
-		flag = creat_flag();
-	}
-	else
-	{
-		if (!(direct = find_dir(argv, &flag)))
-			return (1); //check flags, take name of directories
-	}
-	while (direct[i]) //need check ! if direct > 1 printf name of dir
-	{
-		if ((get_name(dir, direct[i], flag)))
-		{
-			ft_putstr("ft_ls: ");
-			ft_putstr(direct[i]);
-			ft_putstr(": No such file or directory\n");
-			exit(1);
-		}
-		i++;
-	}
-	return (0);
-}
-
-char	**find_dir(char **argv, t_flags **flag)
-{
-	char	**new;
 	int		i;
-	int		check;
+	int		count;
+	t_flags	*flag;
 
 	i = 1;
-	check = 1;
-	new = NULL; 
+	count = 0;
+	flag = creat_flag();
 	while (argv[i])
 	{
 		if (argv[i][0] == '-')
 		{
-			if ((*flag = find_flag(argv[i])))
-				check = i + 1;
-			else
-			{
-				ft_putstr("ft_ls: illegal option\n"); //must write what option wrong!
-				return (NULL);	
-			}
-		}
-		i++;
-	}
-	if (*flag == NULL)
-		*flag = creat_flag();
-	i = 0;
-	while (argv[check + i])
-		i++;
-	if (i > 0)
-	{
-		new = (char **)malloc(sizeof(char *) * i + 1);
-		i = 0;
-		while (argv[check])
-		{
-			new[i] = ft_strdup(argv[check]);
-			check++;
+			find_flag(flag, argv[i]);
 			i++;
 		}
-		new[i] = NULL;
+		if (argv[i])
+		{
+			take_dir(argv[i], flag);
+			i++;
+			count++;
+		}
 	}
-	else
-	{
-		new = (char **)malloc(sizeof(char *) * 1);
-		new[0] = ft_strdup(".");
-		new[1] = NULL;
-	}
-	return (new);
+	if (!count || argc == 1)
+		take_dir(".", flag);
+	return (0);
 }
 
-/*
-** seems to work correctly
-*/
+int		take_dir(char *argv, t_flags *flag) //TODO: count numb of directories
+{
+	char	*direct;
 
-t_flags	*find_flag(char *argv)
+	direct = NULL;
+	if (direct = ft_strdup(argv))
+		write_info(direct, flag);
+	else
+	{
+		perror("can't malloc memmory\n");
+		return (0);
+	}
+	return (1);
+}
+
+int		find_flag(t_flags *flag, char *argv)
 {
 	int		i;
 	int		j;
 	char tmp[5] = {'l', 'a', 'r', 'R', 't'};
-	t_flags	*flag;
 
 	i = 1;
-	flag = creat_flag();
 	while (argv[i])
 	{
 		j = 0;
 		if (argv[i] != 'l' && argv[i] != 'a' && argv[i] != 'r'
 			&& argv[i] != 'R' && argv[i] != 't')
-		{
-			free(flag);
-			return (NULL);
-		}
+			return(0);
 		while (tmp[j])
 		{
 			if (argv[i] == tmp[j])
@@ -132,5 +82,6 @@ t_flags	*find_flag(char *argv)
 		}
 		i++;
 	}
-	return (flag);
+	return (1);
 }
+
