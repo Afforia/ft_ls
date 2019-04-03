@@ -6,7 +6,7 @@
 /*   By: thaley <thaley@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/30 15:39:07 by thaley            #+#    #+#             */
-/*   Updated: 2019/04/02 21:22:41 by thaley           ###   ########.fr       */
+/*   Updated: 2019/04/03 16:04:50 by thaley           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,8 +112,12 @@ int		ascii_sort(t_ls *ls, int order)
 int		time_sort(t_ls *ls, int order)
 {
 	struct stat	buf;
+	t_date		*date;
+	t_ls		*head;
 
+	date = NULL;
 	order++;
+	head = ls;
 	while (ls)
 	{
 		stat(ls->name, &buf);
@@ -121,7 +125,39 @@ int		time_sort(t_ls *ls, int order)
 		printf("%s\n", ls->sort_time);
 		ls = ls->next;
 	}
+	ls = head;
+	date = mod_time(ls);
+	ls = sort(date, ls);
 	return (0);
+}
+
+t_ls	*sort(t_date *date, t_ls *ls)
+{
+	t_ls	*head;
+	t_date	*tmp;
+
+	head = ls;
+	tmp = date->next;
+	while (date)
+	{
+		while (date->sek < tmp->sek)
+		{
+			while (date->min < tmp->min)
+			{
+				while (date->hour < tmp->hour)
+				{
+					while (date->day < tmp->day)
+					{
+						while (date->week < tmp->week)
+						{
+							while (date->mnth < tmp->mnth)
+						}
+					}
+				}
+			}
+		}
+	}
+	return (ls);
 }
 
 int		take_stime(t_ls *ls)

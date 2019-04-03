@@ -6,7 +6,7 @@
 /*   By: thaley <thaley@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/20 14:07:53 by thaley            #+#    #+#             */
-/*   Updated: 2019/04/02 21:10:47 by thaley           ###   ########.fr       */
+/*   Updated: 2019/04/03 15:51:38 by thaley           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,11 +64,10 @@ typedef struct 		s_access
 
 typedef struct 		s_date
 {
-	char			*month;
-	char			*week;
 	int				year;
 	int				mnth;
-	int				wk;
+	int				day;
+	int				week;
 	int				hour;
 	int				min;
 	int				sek;
@@ -91,12 +90,19 @@ void				user_info(t_ls *ls);
 t_flags				*creat_flag();
 t_ls				*add_list(t_ls *head);
 t_access			*creat_access(t_access *head);
+t_date				*crt_date(t_date *head);
 
 int					sort_string(t_ls *ls, t_flags *flag, t_access *access);
 t_ls				*rm_dotf(t_ls *ls);
 int					ascii_sort(t_ls *ls, int order);
 int					take_stime(t_ls *ls);
 int					time_sort(t_ls *ls, int order);
+t_ls				*sort(t_date *date, t_ls *ls);
+
+t_date				*mod_time(t_ls *ls);
+int					take_week(char *sort_time);
+int					take_month(char *sort_time);
+int					take_other(t_ls *ls, t_date *date);
 
 char				*ft_unitoa(unsigned short n);
 

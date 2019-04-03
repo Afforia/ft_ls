@@ -6,7 +6,7 @@
 /*   By: thaley <thaley@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/30 14:47:14 by thaley            #+#    #+#             */
-/*   Updated: 2019/04/02 19:57:51 by thaley           ###   ########.fr       */
+/*   Updated: 2019/04/03 15:09:43 by thaley           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,32 @@ t_access	*creat_access(t_access *head)
 	new->type = NULL;
 	new->user = NULL;
 	new->next = NULL;
+	if (tmp == NULL)
+		head = new;
+	else
+	{
+		while (tmp->next != NULL)
+			tmp = tmp->next;
+		tmp->next = new;
+	}
+	return (new);
+}
+
+t_date		*crt_date(t_date *head)
+{
+	t_date	*new;
+	t_date	*tmp;
+
+	tmp = head;
+	new = (t_date *)malloc(sizeof(t_date));
+	new->next = NULL;
+	new->sek = 0;
+	new->day = 0;
+	new->week = 0;
+	new->mnth = 0;
+	new->min = 0;
+	new->year = 0;
+	new->hour = 0;
 	if (tmp == NULL)
 		head = new;
 	else
