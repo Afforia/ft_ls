@@ -6,7 +6,7 @@
 /*   By: thaley <thaley@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/30 15:39:07 by thaley            #+#    #+#             */
-/*   Updated: 2019/04/03 16:04:50 by thaley           ###   ########.fr       */
+/*   Updated: 2019/04/09 14:48:31 by thaley           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ int		sort_string(t_ls *ls, t_flags *flag, t_access *access)
 		user_info(ls);
 		take_rights(ls, access);
 	}
-	// print_ls(ls, flag, access, blocks);
+	print_ls(ls, flag, access, blocks);
 	return (blocks);
 }
 
@@ -116,48 +116,93 @@ int		time_sort(t_ls *ls, int order)
 	t_ls		*head;
 
 	date = NULL;
-	order++;
 	head = ls;
 	while (ls)
 	{
 		stat(ls->name, &buf);
 		ls->sort_time = ft_strdup(ctime(&buf.st_mtime));
-		printf("%s\n", ls->sort_time);
 		ls = ls->next;
 	}
 	ls = head;
 	date = mod_time(ls);
-	ls = sort(date, ls);
+	sort(date, ls, order);
 	return (0);
 }
 
-t_ls	*sort(t_date *date, t_ls *ls)
+int		sort(t_date *date, t_ls *ls, int order)
 {
 	t_ls	*head;
-	t_date	*tmp;
+	t_date	*h;
+	t_date	*temp;
+	t_date	*tdate;
+	char	*tmp;
+	int		i;
 
+	i = 0;
 	head = ls;
-	tmp = date->next;
-	while (date)
+	h = date;
+	tmp = NULL;
+	temp = NULL;
+	tdate = NULL;
+	if (date == NULL || ls == NULL)
+		return (1);
+	while (date && ls)
 	{
-		while (date->sek < tmp->sek)
+		i = ft_datecmp(date, h);
+		order == 1 ? (i = -1 * i) : (i = i * 1);
+		if (i > 0)
 		{
-			while (date->min < tmp->min)
-			{
-				while (date->hour < tmp->hour)
-				{
-					while (date->day < tmp->day)
-					{
-						while (date->week < tmp->week)
-						{
-							while (date->mnth < tmp->mnth)
-						}
-					}
-				}
-			}
+			tmp = head->print_name;
+			head->print_name = ls->print_name;
+			ls->print_name = tmp;
+			tmp = head->name;
+			head->name = ls->name;
+			ls->name = tmp;
+			tdate = date->next;
+			h->next = tdate;
+			date->next = h;
+		}
+		ls = ls->next;
+		date = date->next;
+		if (date == NULL || ls == NULL)
+		{
+			if (sort(h->next, head->next, order))
+				return (1);
 		}
 	}
-	return (ls);
+	return (0);
+}
+
+int		ft_datecmp(t_date *date, t_date *next)
+{
+	if (date->year == next->year)
+	{
+		if (date->mnth == next->mnth)
+		{
+			if (date->week == next->week)
+			{
+				if (date->day == next->day)
+				{
+					if (date->hour == next->hour)
+					{
+						if (date->min == next->min)
+							return (date->sek - next->sek);
+						else
+							return (date->min - next->min);
+					}
+					else
+						return (date->hour - next->hour);
+				}
+				else
+					return (date->day - next->day);
+			}
+			else
+				return (date->week - next->week);
+		}
+		else
+			return (date->mnth - next->mnth);
+	}
+	return (date->year - next->year);
 }
 
 int		take_stime(t_ls *ls)

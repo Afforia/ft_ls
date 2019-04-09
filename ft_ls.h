@@ -6,7 +6,7 @@
 /*   By: thaley <thaley@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/20 14:07:53 by thaley            #+#    #+#             */
-/*   Updated: 2019/04/03 15:51:38 by thaley           ###   ########.fr       */
+/*   Updated: 2019/04/09 16:43:27 by thaley           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ typedef struct		s_ls
 	int				uid;
 	int				count;
 	long long int	block;
+	void			*data;
 	struct s_ls		*next;
 }					t_ls;
 
@@ -97,7 +98,8 @@ t_ls				*rm_dotf(t_ls *ls);
 int					ascii_sort(t_ls *ls, int order);
 int					take_stime(t_ls *ls);
 int					time_sort(t_ls *ls, int order);
-t_ls				*sort(t_date *date, t_ls *ls);
+int					sort(t_date *date, t_ls *ls, int order);
+int					ft_datecmp(t_date *date, t_date *next);
 
 t_date				*mod_time(t_ls *ls);
 int					take_week(char *sort_time);
