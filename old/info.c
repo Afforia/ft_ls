@@ -1,163 +1,144 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ls.c                                             :+:      :+:    :+:   */
+/*   info.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: thaley <thaley@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/03/26 20:11:00 by thaley            #+#    #+#             */
-/*   Updated: 2019/03/27 18:50:24 by thaley           ###   ########.fr       */
+/*   Created: 2019/03/30 15:14:49 by thaley            #+#    #+#             */
+/*   Updated: 2019/04/02 21:20:00 by thaley           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
-/* return 1 if smth wrong. 0 = all OK */
-/* here must done all with 1 dir and ONLY then go to next */
-
-int		get_name(DIR *dir, char *direct, t_flags *flag)
+int		write_info(char *direct, t_flags *flag)
 {
+	t_access		*access;
 	t_ls			*ls;
-	t_ls			*head;
-	struct dirent	*file;
-	
+	DIR				*dir;
+	int				blocks;
+
 	ls = NULL;
-	head = NULL;
-	file = NULL;
-	if ((dir = opendir(direct)) == NULL)
-		return (1);
-	ls = add_list(ls);
-	head = ls;
-	while ((file = readdir(dir)) != NULL)
+	access = creat_access(NULL);
+	blocks = 0;
+	if ((dir = opendir(direct)) == NULL) //TODO: normal error
 	{
-		if (ls->name)
-		{
-			ls->next = add_list(ls);
-			ls = ls->next;
-		}
-		ls->name = ft_strdup(file->d_name);
+		ft_putstr("ft_ls: ");
+		ft_putstr(direct);
+		ft_putstr(": No such file or directory\n");
+		exit(1);
 	}
-	ls = head;
+	ls = write_name(dir, direct);
 	closedir(dir);
 	dir = NULL;
-	string_sort(ls);
-	options(ls, flag);
+	blocks = sort_string(ls, flag, access);
+	// print_ls(ls, flag, access, blocks);
 	return (0);
 }
 
-int		string_sort(t_ls *ls)
+t_ls		*write_name(DIR *dir, char *direct)
 {
-	t_ls	*head;
-	char	*tmp;
-	int		i;
+	struct dirent	*file;
+	t_ls			*ls;
+	t_ls			*head;
+	char			*tmp;
+	char			*temp;
+	size_t			d_len;
+	int				i;
 
 	i = 0;
-	tmp = NULL;
-	if (ls == NULL)
-		return (1);
+	ls = add_list(NULL);
+	d_len = ft_strlen(direct);
+	tmp = ft_strnew(d_len + 1);
+	while (direct[i] != '\0')
+	{
+		tmp[i] = direct[i];
+		i++;
+	}
+	tmp[i] = '/';
+	tmp[++i] = '\0';
+	file = NULL;
 	head = ls;
-	while (ls)
-	{
-		i = ft_strcmp(ls->name, head->name);
-		if (i < 0)
+	if ((ft_strcmp(direct, ".")) == 0)
+	{	
+		while ((file = readdir(dir)) != NULL)
 		{
-			tmp = head->name;
-			head->name = ls->name;
-			ls->name = tmp;
-		}
-		ls = ls->next;
-		if (ls == NULL)
-		{
-			if (string_sort(head->next))
-				return (1);
+			if (ls->name)
+			{
+				ls->next = add_list(ls);
+				ls = ls->next;
+			}
+		ls->name = ft_strdup(file->d_name);
+		ls->print_name = ft_strdup(file->d_name);
 		}
 	}
-	return (0);
-}
-
-int		options(t_ls *ls, t_flags *flag)
-{
-	t_access	*access;
-	int			blocks;
-
-	blocks = 0;
-	access = NULL;
-	if (flag->a == 0)
-		ls = delete_hiden(ls);
-	if (flag->r == 1)
-		re_sort(ls);
-	if (flag->l)
+	else
 	{
-		blocks = get_info(ls); 
-		user_info(ls);
-		access = acess(ls);
+		while ((file = readdir(dir)) != NULL)
+		{
+			temp = ft_strnew(d_len + file->d_namlen + 1);
+			if (ls->name)
+			{
+				ls->next = add_list(ls);
+				ls = ls->next;
+			}
+			temp = ft_strcpy(temp, tmp);
+			temp = ft_strcat(temp, file->d_name);
+			ls->name = ft_strdup(temp);
+			ls->print_name = ft_strdup(file->d_name);
+			free(temp);
+		}
+		free(tmp);
 	}
-	print_ls(ls, flag, access, blocks);
-	return (0);
+	ls = head;
+	return (ls);
 }
 
-int		get_info(t_ls *ls)
+int		all_info(t_ls *ls)
 {
-	struct stat	buf;
-	int			blocks;
+	struct stat		buf;
+	int				blocks;
 
 	blocks = 0;
 	while (ls)
 	{
 		stat(ls->name, &buf);
-		ls->m_time = ft_strsub(ctime(&buf.st_mtime), 4, 12); //только нужная часть даты
+		ls->acess = ft_unitoa(buf.st_mode);
+		ls->block = buf.st_blocks;
 		ls->link = buf.st_nlink;
 		ls->size = buf.st_size;
+		ls->m_time = ft_strsub(ctime(&buf.st_mtime), 4, 12);
 		ls->uid = buf.st_uid;
-		ls->acess = ft_unitoa(buf.st_mode);
-		ls->block = buf.st_blocks; //лучше сделать все таки чаровским
 		blocks = blocks + ls->block;
 		ls = ls->next;
 	}
 	return (blocks);
 }
 
-void	user_info(t_ls *ls)
-{
-	struct passwd	*userinfo;
-	struct group	*grinfo;
-
-	userinfo = getpwuid(ls->uid);
-	grinfo = getgrgid(userinfo->pw_gid);
-	while (ls)
-	{
-		ls->user_name = ft_strdup(userinfo->pw_name);
-		ls->group_name = ft_strdup(grinfo->gr_name);
-		ls = ls->next;
-	}
-}
-
-t_access	*acess(t_ls *ls)
+int		take_rights(t_ls *ls, t_access *access)
 {
 	t_access	*head;
-	t_access	*new;
 
-	new = NULL;
-	new = creat_access(new);
-	head = new;
+	head = access;
 	while (ls)
 	{
-		if (new->type)
+		if (access->type)
 		{
-			new->next = creat_access(new);
-			new = new->next;
+			access->next = creat_access(access);
+			access = access->next;
 		}
 		if (ls->acess[0] == '1')
-			new->type = ft_strdup("-");
+			access->type = ft_strdup("-");
 		else
-			new->type = ft_strdup("d");
-		new->user = take_chmod(ls->acess, 1);
-		new->group = take_chmod(ls->acess, 2);
-		new->other = take_chmod(ls->acess, 3);
+			access->type = ft_strdup("d");
+		access->user = take_chmod(ls->acess, 1);
+		access->group = take_chmod(ls->acess, 2);
+		access->other = take_chmod(ls->acess, 3);
 		ls = ls->next;
 	}
-	new = head;
-	return (new);
+	access = head;
+	return (0);
 }
 
 char	*take_chmod(char *access, int num)
@@ -186,46 +167,25 @@ char	*take_chmod(char *access, int num)
 	return (new);
 }
 
-t_ls	*delete_hiden(t_ls *ls)
+void	user_info(t_ls *ls)
 {
-	t_ls	*head;
+	struct passwd	*userinfo;
+	struct group	*grinfo;
 
-	head = NULL;
-	while (ls->name[0] == '.')
-	{
-		head = ls->next;
-		free(ls);
-		ls = head;
-	}
-	return (ls);
-}
-
-int		re_sort(t_ls *ls)
-{
-	t_ls	*head;
-	char	*tmp;
-	int		i;
-
-	i = 0;
-	tmp = NULL;
-	if (ls == NULL)
-		return (1);
-	head = ls;
 	while (ls)
 	{
-		i = ft_strcmp(ls->name, head->name);
-		if (i > 0)
-		{
-			tmp = head->name;
-			head->name = ls->name;
-			ls->name = tmp;
+		if ((userinfo = getpwuid(ls->uid)) == NULL)
+	 	{
+			 ls = ls->next;
+			 continue;
 		}
+		if ((grinfo = getgrgid(userinfo->pw_gid)) == NULL)
+		{
+			 ls = ls->next;
+			 continue;
+		}
+		ls->user_name = ft_strdup(userinfo->pw_name);
+		ls->group_name = ft_strdup(grinfo->gr_name);
 		ls = ls->next;
-		if (ls == NULL)
-		{
-			if (re_sort(head->next))
-				return (1);
-		}
 	}
-	return (0);
 }
