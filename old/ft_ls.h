@@ -6,7 +6,7 @@
 /*   By: thaley <thaley@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/03/20 14:07:53 by thaley            #+#    #+#             */
-/*   Updated: 2019/03/29 21:43:32 by thaley           ###   ########.fr       */
+/*   Updated: 2019/04/09 16:43:27 by thaley           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,9 @@
 typedef struct		s_ls
 {
 	char			*name;
+	char			*print_name;
 	char			*m_time;
+	char			*sort_time;
 	char			*user_name;
 	char			*group_name;
 	char			*acess;
@@ -39,6 +41,7 @@ typedef struct		s_ls
 	int				uid;
 	int				count;
 	long long int	block;
+	void			*data;
 	struct s_ls		*next;
 }					t_ls;
 
@@ -60,35 +63,51 @@ typedef struct 		s_access
 	struct s_access	*next;
 }					t_access;
 
+typedef struct 		s_date
+{
+	int				year;
+	int				mnth;
+	int				day;
+	int				week;
+	int				hour;
+	int				min;
+	int				sek;
+	struct s_date	*next;
+}					t_date;
 
 
-char				**find_dir(char **argv, t_flags **flag);
-t_flags				*find_flag(char *argv);
+int					take_dir(char *argv, t_flags *flag);
+int					take_flags(char *argv, t_flags *flag);
+int					find_flag(t_flags *flag, char *argv);
 
-int					get_name(DIR *dir, char *direct, t_flags *flag);
-int					get_info(t_ls *ls);
-int					string_sort(t_ls *ls);
-int					options(t_ls *ls, t_flags *flag);
-void				user_info(t_ls *ls);
-t_access			*acess(t_ls *ls);
+
+int					write_info(char *direct, t_flags *flag);
+t_ls				*write_name(DIR *dir, char *direct);
+int					all_info(t_ls *ls);
+int					take_rights(t_ls *ls, t_access *access);
 char				*take_chmod(char *access, int num);
-t_ls				*delete_hiden(t_ls *ls);
-int					re_sort(t_ls *ls);
+void				user_info(t_ls *ls);
 
-t_ls				*add_list(t_ls *head);
 t_flags				*creat_flag();
+t_ls				*add_list(t_ls *head);
 t_access			*creat_access(t_access *head);
+t_date				*crt_date(t_date *head);
+
+int					sort_string(t_ls *ls, t_flags *flag, t_access *access);
+t_ls				*rm_dotf(t_ls *ls);
+int					ascii_sort(t_ls *ls, int order);
+int					take_stime(t_ls *ls);
+int					time_sort(t_ls *ls, int order);
+int					sort(t_date *date, t_ls *ls, int order);
+int					ft_datecmp(t_date *date, t_date *next);
+
+t_date				*mod_time(t_ls *ls);
+int					take_week(char *sort_time);
+int					take_month(char *sort_time);
+int					take_other(t_ls *ls, t_date *date);
 
 char				*ft_unitoa(unsigned short n);
 
-void	print_ls(t_ls *ls, t_flags *flag, t_access *access, int blocks);
-
-// t_ls				*some_func(DIR *dir);
-// void				free_list(t_ls **head, void del_ls(t_ls *));
-// void				del_ls(t_ls *tmp);
-// int					write_info(t_ls *info);
-// void				print_all(t_ls *info);
-// void				user_info(t_ls *info);
-// int					string_sort(t_ls *info);
+int					print_ls(t_ls *ls, t_flags *flag, t_access *access, int blocks);
 
 #endif
