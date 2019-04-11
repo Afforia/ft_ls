@@ -6,7 +6,7 @@
 /*   By: thaley <thaley@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/10 17:11:09 by thaley            #+#    #+#             */
-/*   Updated: 2019/04/10 17:58:08 by thaley           ###   ########.fr       */
+/*   Updated: 2019/04/11 22:17:32 by thaley           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,13 +39,59 @@ typedef struct		s_flag
 typedef struct		s_dir
 {
 	char			*direct;
+	unsigned int	type;
+	size_t			len;
 	int				count;
 	struct s_dir	*next;
 }					t_dir;
 
-t_flag				*find_flag(t_flag *flag, char *argv);
-t_dir				*take_dir(char *direct, t_flag *flag);
+typedef struct 		s_sort
+{
+	char			*m_time;
+	char			*dir_name;
+	char			*print_name;
+	int				year;
+	int				mnth;
+	int				week;
+	int				day;
+	int				hour;
+	int				min;
+	int				sec;
+}					t_sort;
 
-t_flag				*creat_flag();
+typedef struct		s_access
+{
+	char			*user;
+	char			*group;
+	char			*other;
+	char			*type;
+}					t_access;
+
+typedef struct		s_ls
+{
+	t_sort			*sort;
+	t_access		*chmod;
+	char			*print_time;
+	char			*u_name;
+	char			*g_name;
+	char			*access;
+	int				size;
+	int				link;
+	int				uid;
+	long long int	blocks;
+	struct s_ls		*next;
+}					t_ls;
+
+
+
+int					find_flag(t_flag *flag, char *argv);
+t_dir				*take_dir(char *direct, t_dir *dir);
+void				info(t_dir *dir, t_flag *flag);
+t_ls				*take_name(t_dir *direct, int flag);
+t_ls				*write_path(DIR *dir, t_dir *direct, int flag);
+
+t_flag				*crt_flag();
+t_dir				*crt_dir(t_dir *head);
+t_ls				*add_ls(t_ls *head);
 
 #endif
