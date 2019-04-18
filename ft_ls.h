@@ -6,7 +6,7 @@
 /*   By: thaley <thaley@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/10 17:11:09 by thaley            #+#    #+#             */
-/*   Updated: 2019/04/11 22:17:32 by thaley           ###   ########.fr       */
+/*   Updated: 2019/04/19 00:02:57 by thaley           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,6 @@ typedef struct		s_flag
 typedef struct		s_dir
 {
 	char			*direct;
-	unsigned int	type;
 	size_t			len;
 	int				count;
 	struct s_dir	*next;
@@ -47,8 +46,8 @@ typedef struct		s_dir
 
 typedef struct 		s_sort
 {
+	unsigned int	type;
 	char			*m_time;
-	char			*dir_name;
 	char			*print_name;
 	int				year;
 	int				mnth;
@@ -82,13 +81,11 @@ typedef struct		s_ls
 	struct s_ls		*next;
 }					t_ls;
 
+t_dir				*take_dir(char **argv, t_flag *flag);
+t_dir				*wr_dir(char *argv, t_dir *dir);
 
-
-int					find_flag(t_flag *flag, char *argv);
-t_dir				*take_dir(char *direct, t_dir *dir);
-void				info(t_dir *dir, t_flag *flag);
-t_ls				*take_name(t_dir *direct, int flag);
-t_ls				*write_path(DIR *dir, t_dir *direct, int flag);
+t_flag				*find_flag(char **argv, int *i);
+int					check_flag(t_flag *flag, char *argv);
 
 t_flag				*crt_flag();
 t_dir				*crt_dir(t_dir *head);
