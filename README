@@ -1,25 +1,4 @@
-write = вывод на экран
-opendir || readdir || closedir = информация о файлах (имя) в заданной директории
-stat || lstat || time || ctime = с помощью этих функций берем информация разного вида (права доступа, тип файла, размер файла и проч.)
-getpwuid = имя юзера, пароль юзера, его айди, домашняя директория, оболочка + еще инфо о юзере
-getgrgid = вся инфа связанная с группой
-
-
-если есть флаги они всегда идут вторым аргументом ?!
-возможно все придеться переводить в чары для настройки корректного отображения!
-
-1) сортировка по ascii 	  +
-2) права доступа в строке +
-3) нужно сначала сортировать потом записывать или как то менять местами полностью информацию в листе!
-
-если несколько директорий он СНАЧАЛА должен вывести ОШИБКУ и только потом результат корректной директории
-
-TO DO
-1) ! Normal flag check !
-2) ! acess check !
-3) Sort list like at book at home ?!?!
-
-MB done check for ALL directories before write! 
+Сделать полностью рабочий ls, который работает только с флагом -R
 
 000	0	---		нет						нет
 001	1	--x		выполнение				чтение файлов и их свойств
@@ -30,26 +9,104 @@ MB done check for ALL directories before write!
 110	6	rw-		чтение и запись			чтение имён файлов
 111	7	rwx		все права				все права
 
-Нужно все таки считать кло-во файлов !
+1)основной путь
+2)папки и их подпапки по ascii
 
-проверить в школе вывод и сравнить что не так!
-потом только продолжать работать дальше
+Прим:
 
-СДЕЛАТЬ ОТДЕЛЬНУЮ СТРУКТУРУ ДЛЯ СОРТИРОВКИ ПО ВРЕМЕНИ
+папки:
+test->dir1
+	->dir2->dop1
+		  ->dop2
+	->dir3->dop1
 
-1) проверка на флаги и их запись
-2) проверка какие директории считывать
-3) сортировка
-4) взятие результатов 
-5) выод результатов
+Вывод:
+test ...
 
-!! ls = ошибки выводятся в самом начале
-		сортирует выодимые дирктории по ASCII
-		если флага нет -> последовательно
-		флаги могут быть только вначале (первыми аргументами)
-		если флаг идет после директорий - он считывается как директория
-		if (ls -Q [file]) Q - только как пример (любое значение которого нет в списке флагов)
-		{
-			ls: illegal option -- Q
-			usage: ls [-ABCFGHLOPRSTUWabcdefghiklmnopqrstuwx1] [file ...]
-		}
+test/dir1 ...
+
+test/dir2 ...
+
+test/dir2/dop1 ...
+
+test/dir2/dop2 ...
+
+test/dir3 ...
+
+test/dir3/dop1 ...
+
+ВЫВОД ДЛЯ ОДНОГО ПОДАНОГО ПУТИ
+
+➜  2ft_ls git:(temp) ✗ ls -R ../ft_ls
+
+Makefile    create.c    directory.c flag.c      ft_ls       libft       ls.o        main.o      oldest      sort.o
+README      create.o    directory.o flag.o      ft_ls.h     ls.c        main.c      old.h       sort.c
+
+../ft_ls/libft:
+Makefile        ft_isprint.c    ft_lstnew.c     ft_memmove.c    ft_putnbr_fd.c  ft_strcpy.c     ft_strlcat.c    ft_strnequ.c    ft_strtrim.c
+author          ft_isprint.o    ft_lstnew.o     ft_memmove.o    ft_putnbr_fd.o  ft_strcpy.o     ft_strlcat.o    ft_strnequ.o    ft_strtrim.o
+ft_atoi.c       ft_itoa.c       ft_memalloc.c   ft_memset.c     ft_putstr.c     ft_strdel.c     ft_strlen.c     ft_strnew.c     ft_tolower.c
+ft_atoi.o       ft_itoa.o       ft_memalloc.o   ft_memset.o     ft_putstr.o     ft_strdel.o     ft_strlen.o     ft_strnew.o     ft_tolower.o
+ft_bzero.c      ft_lstadd.c     ft_memccpy.c    ft_putchar.c    ft_putstr_fd.c  ft_strdup.c     ft_strmap.c     ft_strnstr.c    ft_toupper.c
+ft_bzero.o      ft_lstadd.o     ft_memccpy.o    ft_putchar.o    ft_putstr_fd.o  ft_strdup.o     ft_strmap.o     ft_strnstr.o    ft_toupper.o
+ft_isalnum.c    ft_lstdel.c     ft_memchr.c     ft_putchar_fd.c ft_strcat.c     ft_strequ.c     ft_strmapi.c    ft_strrchr.c    libft.a
+ft_isalnum.o    ft_lstdel.o     ft_memchr.o     ft_putchar_fd.o ft_strcat.o     ft_strequ.o     ft_strmapi.o    ft_strrchr.o    libft.h
+ft_isalpha.c    ft_lstdelone.c  ft_memcmp.c     ft_putendl.c    ft_strchr.c     ft_striter.c    ft_strncat.c    ft_strsplit.c   libft.h.gch
+ft_isalpha.o    ft_lstdelone.o  ft_memcmp.o     ft_putendl.o    ft_strchr.o     ft_striter.o    ft_strncat.o    ft_strsplit.o   old
+ft_isascii.c    ft_lstiter.c    ft_memcpy.c     ft_putendl_fd.c ft_strclr.c     ft_striteri.c   ft_strncmp.c    ft_strstr.c
+ft_isascii.o    ft_lstiter.o    ft_memcpy.o     ft_putendl_fd.o ft_strclr.o     ft_striteri.o   ft_strncmp.o    ft_strstr.o
+ft_isdigit.c    ft_lstmap.c     ft_memdel.c     ft_putnbr.c     ft_strcmp.c     ft_strjoin.c    ft_strncpy.c    ft_strsub.c
+ft_isdigit.o    ft_lstmap.o     ft_memdel.o     ft_putnbr.o     ft_strcmp.o     ft_strjoin.o    ft_strncpy.o    ft_strsub.o
+
+../ft_ls/libft/old:
+create.c    date.c      ft_ls.h     ft_unitoa.c info.c      main.c      print.c     sort.c
+
+../ft_ls/oldest:
+a.out       create.c    ft_ls.h     ft_unitoa.c get_pwuid.c info.c      main.c      print.c     r_dir.c     test        test.c      time.c
+
+../ft_ls/oldest/test:
+ln.c   main.c
+
+ВЫВОД ДЛЯ НЕСКОЛЬКИХ ПОДАННЫХ ПУТЕЙ
+
+➜  2ft_ls git:(temp) ✗ ls -R ../ft_ls ../2ft_ls
+../2ft_ls:
+Makefile README   ft_ls.h  libft    main.c
+
+../2ft_ls/libft:
+Makefile        ft_isdigit.c    ft_lstmap.c     ft_memdel.c     ft_putnbr.c     ft_strcmp.c     ft_strjoin.c    ft_strncpy.c    ft_strsub.c
+author          ft_isprint.c    ft_lstnew.c     ft_memmove.c    ft_putnbr_fd.c  ft_strcpy.c     ft_strlcat.c    ft_strnequ.c    ft_strtrim.c
+ft_atoi.c       ft_itoa.c       ft_memalloc.c   ft_memset.c     ft_putstr.c     ft_strdel.c     ft_strlen.c     ft_strnew.c     ft_tolower.c
+ft_bzero.c      ft_lstadd.c     ft_memccpy.c    ft_putchar.c    ft_putstr_fd.c  ft_strdup.c     ft_strmap.c     ft_strnstr.c    ft_toupper.c
+ft_isalnum.c    ft_lstdel.c     ft_memchr.c     ft_putchar_fd.c ft_strcat.c     ft_strequ.c     ft_strmapi.c    ft_strrchr.c    libft.a
+ft_isalpha.c    ft_lstdelone.c  ft_memcmp.c     ft_putendl.c    ft_strchr.c     ft_striter.c    ft_strncat.c    ft_strsplit.c   libft.h
+ft_isascii.c    ft_lstiter.c    ft_memcpy.c     ft_putendl_fd.c ft_strclr.c     ft_striteri.c   ft_strncmp.c    ft_strstr.c
+
+../ft_ls:
+Makefile    create.c    directory.c flag.c      ft_ls       libft       ls.o        main.o      oldest      sort.o
+README      create.o    directory.o flag.o      ft_ls.h     ls.c        main.c      old.h       sort.c
+
+../ft_ls/libft:
+Makefile        ft_isprint.c    ft_lstnew.c     ft_memmove.c    ft_putnbr_fd.c  ft_strcpy.c     ft_strlcat.c    ft_strnequ.c    ft_strtrim.c
+author          ft_isprint.o    ft_lstnew.o     ft_memmove.o    ft_putnbr_fd.o  ft_strcpy.o     ft_strlcat.o    ft_strnequ.o    ft_strtrim.o
+ft_atoi.c       ft_itoa.c       ft_memalloc.c   ft_memset.c     ft_putstr.c     ft_strdel.c     ft_strlen.c     ft_strnew.c     ft_tolower.c
+ft_atoi.o       ft_itoa.o       ft_memalloc.o   ft_memset.o     ft_putstr.o     ft_strdel.o     ft_strlen.o     ft_strnew.o     ft_tolower.o
+ft_bzero.c      ft_lstadd.c     ft_memccpy.c    ft_putchar.c    ft_putstr_fd.c  ft_strdup.c     ft_strmap.c     ft_strnstr.c    ft_toupper.c
+ft_bzero.o      ft_lstadd.o     ft_memccpy.o    ft_putchar.o    ft_putstr_fd.o  ft_strdup.o     ft_strmap.o     ft_strnstr.o    ft_toupper.o
+ft_isalnum.c    ft_lstdel.c     ft_memchr.c     ft_putchar_fd.c ft_strcat.c     ft_strequ.c     ft_strmapi.c    ft_strrchr.c    libft.a
+ft_isalnum.o    ft_lstdel.o     ft_memchr.o     ft_putchar_fd.o ft_strcat.o     ft_strequ.o     ft_strmapi.o    ft_strrchr.o    libft.h
+ft_isalpha.c    ft_lstdelone.c  ft_memcmp.c     ft_putendl.c    ft_strchr.c     ft_striter.c    ft_strncat.c    ft_strsplit.c   libft.h.gch
+ft_isalpha.o    ft_lstdelone.o  ft_memcmp.o     ft_putendl.o    ft_strchr.o     ft_striter.o    ft_strncat.o    ft_strsplit.o   old
+ft_isascii.c    ft_lstiter.c    ft_memcpy.c     ft_putendl_fd.c ft_strclr.c     ft_striteri.c   ft_strncmp.c    ft_strstr.c
+ft_isascii.o    ft_lstiter.o    ft_memcpy.o     ft_putendl_fd.o ft_strclr.o     ft_striteri.o   ft_strncmp.o    ft_strstr.o
+ft_isdigit.c    ft_lstmap.c     ft_memdel.c     ft_putnbr.c     ft_strcmp.c     ft_strjoin.c    ft_strncpy.c    ft_strsub.c
+ft_isdigit.o    ft_lstmap.o     ft_memdel.o     ft_putnbr.o     ft_strcmp.o     ft_strjoin.o    ft_strncpy.o    ft_strsub.o
+
+../ft_ls/libft/old:
+create.c    date.c      ft_ls.h     ft_unitoa.c info.c      main.c      print.c     sort.c
+
+../ft_ls/oldest:
+a.out       create.c    ft_ls.h     ft_unitoa.c get_pwuid.c info.c      main.c      print.c     r_dir.c     test        test.c      time.c
+
+../ft_ls/oldest/test:
+ln.c   main.c
