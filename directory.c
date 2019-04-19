@@ -6,7 +6,7 @@
 /*   By: thaley <thaley@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/19 04:25:07 by thaley            #+#    #+#             */
-/*   Updated: 2019/04/19 05:43:55 by thaley           ###   ########.fr       */
+/*   Updated: 2019/04/19 06:40:43 by thaley           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,13 +26,23 @@ void		directory(char **argv, t_flag *flag, int i)
 			drct->next = crt_dir(drct);
 			drct = drct->next;
 		}
-		drct->drct = ft_strdup(argv[i]);
+		drct->drct = take_path(argv[i]);
 		i++;
 	}
 	if (i == 1 || (flag->R && i == 2))
-		drct->drct = ft_strdup(".");
+		drct->drct = ft_strdup("./");
 	drct = head;
 	take_dir(drct, flag);
+}
+
+char		*take_path(char *argv)
+{
+	char	*new;
+
+	new = malloc(sizeof(char) + (ft_strlen(argv) + 1));
+	new = ft_strcpy(new, argv);
+	new = ft_strcat(new, "/");
+	return (new);
 }
 
 void		take_dir(t_dir *drct, t_flag *flag)
@@ -58,7 +68,8 @@ void		take_dir(t_dir *drct, t_flag *flag)
 		closedir(dir);
 		drct = drct->next;
 	}
-	names = head;
+	sort_names(names);
+
 	printf("%d\n", flag->d_count);
 	while (names)
 	{
@@ -73,8 +84,10 @@ void		take_names(DIR *dir, t_dir *drct, t_file *names)
 
 	while ((file = readdir(dir)))
 	{
-		if (names->name)
+		while (names->name)
 		{
+			while (names->next != NULL)
+				names = names->next;
 			names->next = crt_file(names);
 			names = names->next;
 		}

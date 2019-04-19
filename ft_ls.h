@@ -6,7 +6,7 @@
 /*   By: thaley <thaley@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/10 17:11:09 by thaley            #+#    #+#             */
-/*   Updated: 2019/04/19 05:44:00 by thaley           ###   ########.fr       */
+/*   Updated: 2019/04/19 06:38:24 by thaley           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,9 +55,12 @@ t_file				*crt_file(t_file *head);
 int					check_flag(char **argv, t_flag *flag);
 
 void				directory(char **argv, t_flag *flag, int i);
+char				*take_path(char *argv);
 void				take_dir(t_dir *drct, t_flag *flag);
 void				take_names(DIR *dir, t_dir *drct, t_file *names);
 
 int					sort_dir(t_dir *drct);
+int					sort_names(t_file *names);
+void				change(char **str, char **str2);
 
 #endif
