@@ -12,6 +12,13 @@
 1)основной путь
 2)папки и их подпапки по ascii
 
+	printf("%d\n", flag->d_count);
+	while (names)
+	{
+		printf("%s\n", names->name);
+		names = names->next;
+	}
+
 Прим:
 
 папки:

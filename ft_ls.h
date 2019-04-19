@@ -6,7 +6,7 @@
 /*   By: thaley <thaley@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/10 17:11:09 by thaley            #+#    #+#             */
-/*   Updated: 2019/04/19 04:03:41 by thaley           ###   ########.fr       */
+/*   Updated: 2019/04/19 05:44:00 by thaley           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,8 +33,31 @@ typedef struct		s_flag
 	int				d_count;
 }					t_flag;
 
+typedef struct		s_dir
+{
+	char			*drct;
+	struct s_dir	*next;
+}					t_dir;
+
+typedef struct		s_file
+{
+	char			*d_name;
+	char			*name;
+	unsigned int	type;
+	struct s_file	*next;
+}					t_file;
+
+
 t_flag				*crt_flag(void);
+t_dir				*crt_dir(t_dir *head);
+t_file				*crt_file(t_file *head);
 
 int					check_flag(char **argv, t_flag *flag);
+
+void				directory(char **argv, t_flag *flag, int i);
+void				take_dir(t_dir *drct, t_flag *flag);
+void				take_names(DIR *dir, t_dir *drct, t_file *names);
+
+int					sort_dir(t_dir *drct);
 
 #endif
