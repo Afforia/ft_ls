@@ -6,7 +6,7 @@
 /*   By: thaley <thaley@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/19 04:25:07 by thaley            #+#    #+#             */
-/*   Updated: 2019/04/19 06:40:43 by thaley           ###   ########.fr       */
+/*   Updated: 2019/04/20 01:13:27 by thaley           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,8 +64,7 @@ void		take_dir(t_dir *drct, t_flag *flag)
 			drct = drct->next;
 			continue;
 		}
-		take_names(dir, drct, names);
-		closedir(dir);
+		take_names(dir, drct->drct, names, flag);
 		drct = drct->next;
 	}
 	sort_names(names);
@@ -78,10 +77,14 @@ void		take_dir(t_dir *drct, t_flag *flag)
 	}
 }
 
-void		take_names(DIR *dir, t_dir *drct, t_file *names)
+void		take_names(DIR *dir, char *drct, t_file *names, t_flag *flag)
 {
 	struct dirent	*file;
+	t_file			*head;
 
+	head = names;
+	if (head == NULL)
+		return;
 	while ((file = readdir(dir)))
 	{
 		while (names->name)
@@ -91,8 +94,40 @@ void		take_names(DIR *dir, t_dir *drct, t_file *names)
 			names->next = crt_file(names);
 			names = names->next;
 		}
-		names->d_name = ft_strdup(drct->drct);
+		names->d_name = ft_strdup(drct);
 		names->name = ft_strdup(file->d_name);
 		names->type = file->d_type;
+		printf("%s\n", names->name);
+	}
+	free (drct);
+	drct = NULL;
+	closedir(dir);
+	if (flag->R)
+		sub_dir(head, flag);
+}
+
+void		sub_dir(t_file *head, t_flag *flag)
+{
+	DIR			*dir;
+	t_file		*tmp;
+	static char	*path;
+	char		*full_path;
+
+	full_path = NULL;
+	tmp = head;
+	while (tmp)
+	{
+		if (tmp->type == 4 && tmp->name[0] != '.' && (!path || (ft_strcmp(tmp->name, path) != 0)))
+		{
+			if (path)
+				free(path);
+			path = ft_strdup(tmp->name);
+			full_path = ft_strnew((ft_strlen(tmp->d_name)) + (ft_strlen(tmp->name)));
+			full_path = ft_strcpy(full_path, tmp->d_name);
+			full_path = ft_strcat(full_path, tmp->name);
+			dir = opendir(full_path);
+			take_names(dir, full_path, head, flag);
+		}
+		tmp = tmp->next;
 	}
 }
