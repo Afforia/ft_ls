@@ -53,3 +53,4 @@ MB done check for ALL directories before write!
 			ls: illegal option -- Q
 			usage: ls [-ABCFGHLOPRSTUWabcdefghiklmnopqrstuwx1] [file ...]
 		}
+		ls: %s: Permission denied\n", av - если не существует такого файла или директории
