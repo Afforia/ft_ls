@@ -6,7 +6,7 @@
 /*   By: thaley <thaley@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/04/19 01:28:07 by thaley            #+#    #+#             */
-/*   Updated: 2019/04/19 02:11:33 by thaley           ###   ########.fr       */
+/*   Updated: 2019/06/05 14:21:01 by thaley           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@ int			sort_dir(t_dir *dir, int order)
 {
 	t_dir	*head;
 	int		i;
+//TODO: just a test
+//FIXME: klsdfghj
 
 	i = 0;
 	if (dir == NULL)
