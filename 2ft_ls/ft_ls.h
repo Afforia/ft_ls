@@ -6,7 +6,7 @@
 /*   By: thaley <thaley@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/05 17:04:44 by thaley            #+#    #+#             */
-/*   Updated: 2019/06/05 22:01:09 by thaley           ###   ########.fr       */
+/*   Updated: 2019/06/06 16:24:01 by thaley           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,10 +26,17 @@
 #include <grp.h>
 #include <pwd.h>
 
+typedef struct			s_info
+{
+	char				*path;
+	char				*dir;
+	int					type;
+}						t_info;
+
 typedef struct			s_dir_data
 {
-	struct t_info		*info;
-	struct s_dir_dat	*next;
+	t_info				*info;
+	struct s_dir_data	*next;
 }				t_dir_data;
 
 typedef struct			s_flag
@@ -43,16 +50,13 @@ typedef struct			s_flag
 	int					illegal;
 }						t_flag;
 
-struct					s_info
-{
-	char				*path;
-	char				*dir;
-	int					type;
-}						;
-
-
 int						take_flag(t_flag *flag, char **argv);
 t_flag					*write_flag(t_flag *flag, char *argv);
 char					*write_dname(char *argv);
+void					*take_info(t_dir_data *data, t_flag *flag);
+
+t_info					*crt_info(void);
+t_dir_data				*crt_dir(t_dir_data *head);
+
 
 #endif

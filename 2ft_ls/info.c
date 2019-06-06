@@ -6,7 +6,7 @@
 /*   By: thaley <thaley@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/05 18:10:27 by thaley            #+#    #+#             */
-/*   Updated: 2019/06/05 21:30:03 by thaley           ###   ########.fr       */
+/*   Updated: 2019/06/06 16:49:21 by thaley           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,4 +55,9 @@ t_flag	*write_flag(t_flag *flag, char *argv)
 			flag->illegal = 0;
 	}
 	return (flag);
+}
+
+void	*take_info(t_dir_data *data, t_flag *flag)
+{
+	
 }
