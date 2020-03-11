@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_ls.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thaley <thaley@student.42.fr>              +#+  +:+       +#+        */
+/*   By: cdenys-a <cdenys-a@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/04/10 17:11:09 by thaley            #+#    #+#             */
-/*   Updated: 2019/04/19 03:14:51 by thaley           ###   ########.fr       */
+/*   Created: 2019/03/20 14:07:53 by thaley            #+#    #+#             */
+/*   Updated: 2019/06/19 17:43:57 by cdenys-a         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,52 +14,22 @@
 # define FT_LS_H
 
 # include "libft/libft.h"
-# include <unistd.h> //write | readlink
-# include <dirent.h> //opendir | readdir | closedir
-# include <sys/types.h> // structs
-# include <sys/dir.h> //struct dirent
-# include <sys/stat.h> //stat | lstat
-# include <grp.h> //getgrgid
-# include <uuid/uuid.h> //getgrgid | getpwuid
-# include <sys/xattr.h> //listxattr | getxattr
-# include <time.h> //time | ctime
-# include <stdlib.h> //malloc | free | exit
-# include <stdio.h> //perror | strerror
-# include <pwd.h> 
-
-typedef struct		s_flag
-{
-	int				l;
-	int				a;
-	int				t;
-	int				r;
-	int				R;
-	int				dir_count;
-}					t_flag;
-
-typedef struct		s_dir
-{
-	char			*direct;
-	size_t			len;
-	struct s_dir	*next;
-}					t_dir;
-
-typedef struct 		s_sort
-{
-	unsigned int	type;
-	char			*m_time;
-	char			*print_name;
-	int				year;
-	int				mnth;
-	int				week;
-	int				day;
-	int				hour;
-	int				min;
-	int				sec;
-}					t_sort;
+# include <unistd.h>
+# include <dirent.h>
+# include <sys/types.h>
+# include <sys/dir.h>
+# include <sys/stat.h>
+# include <grp.h>
+# include <uuid/uuid.h>
+# include <sys/xattr.h>
+# include <time.h>
+# include <stdlib.h>
+# include <stdio.h>
+# include <pwd.h>
 
 typedef struct		s_access
 {
+	char			*chmod_access;
 	char			*user;
 	char			*group;
 	char			*other;
@@ -68,44 +38,72 @@ typedef struct		s_access
 
 typedef struct		s_ls
 {
-	t_sort			*sort;
-	t_access		*chmod;
-	char			*print_time;
-	char			*u_name;
-	char			*g_name;
-	char			*access;
-	int				size;
-	int				link;
+	char			*path;
+	char			*name;
+	char			*m_time;
+	char			*month;
+	char			*day;
+	char			*time;
+	long int		unix_time;
+	char			*user_name;
+	char			*group_name;
+	int				type;
+	char			*size;
+	char			*link;
 	int				uid;
-	long long int	blocks;
+	int				gid;
+	int				count;
+	long long int	block;
+	void			*data;
+	t_access		access;
+	int				print;
 	struct s_ls		*next;
 }					t_ls;
 
-typedef struct 		s_output
+typedef struct		s_flags
 {
-	char			*dir_name;
-	char			**print;
-	struct s_output	*next;
-}					t_output;
+	int				l;
+	int				a;
+	int				r;
+	int				recursive;
+	int				t;
+	int				outside_flist;
+	int				indt_custom;
+	int				onedir;
+	int				one_opt;
+	int				first;
+}					t_flags;
 
-
-t_dir				*take_dir(char **argv, t_flag **flag);
-t_dir				*wr_dir(char *argv, t_dir *dir);
-void				dir_content(t_dir *direct, t_flag *flag);
-
-t_flag				*find_flag(char **argv, int *i);
-int					check_flag(t_flag *flag, char *argv);
-
-t_flag				*crt_flag(void);
-t_dir				*crt_dir(t_dir *head);
-t_ls				*crt_ls(t_ls *head);
-t_sort				*crt_sort(void);
-t_output			*crt_out(t_output *head);
-
-int					sort_dir(t_dir *dir, int order);
-void				swap_name(char **str, char **head);
-
-t_ls				*take_name(DIR *dir, t_dir *direct, t_flag *flag);
-void				output(t_ls *ls, t_flag *flag, char *direct, t_output *print);
+int					parse_validate_flags(t_flags *flag, char **av);
+void				ls(char **arg, t_flags *flag, int i);
+t_ls				*parse_direct(char *direct);
+t_ls				*parse_direct_aux(DIR *dir, char *direct,
+					struct dirent *file, t_ls *ls);
+int					all_info(t_ls *ls, t_flags *flag);
+int					take_rights(t_ls *ls, struct stat buf);
+char				*take_chmod(char *access, int num, char *type);
+void				user_info(t_ls *ls);
+t_flags				create_flag();
+t_ls				*add_list(t_ls *head);
+t_ls				*sort_list(t_ls *ls, t_flags *flag);
+t_ls				*rm_dotf(t_ls *ls);
+void				ascii_sort(t_ls **ls, int order);
+void				time_sort(t_ls **ls, int order);
+int					take_week(char *sort_time);
+int					take_month(char *sort_time);
+char				*ft_unitoa(unsigned short n);
+int					print_ls(t_ls *ls, t_flags *flag, int blocks, char *d);
+char				*take_path(char *direct);
+void				ls_dir(char *name, t_flags *flag, int name_n_indent);
+void				argv_sort(int argc, char **argv, int i, int order);
+void				ls_custom(char **av, int i, t_flags *flag);
+void				ls_free_l(t_ls *l);
+void				ls_free(t_ls *l);
+int					is_onlyonedir(int ac, char **av, int i);
+void				illegal_opt_err(char opt);
+void				permission_denied_err(char *name);
+int					opening_check(char *name);
+void				perroring(char *msg);
+void				print_ls_l(t_ls *ls, int blocks, t_flags *f);
 
 #endif
